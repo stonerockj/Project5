@@ -9,7 +9,7 @@
 #include "itemType.h"
 #include "bag.h"
 
-#define DEBUG true
+#define DEBUG false
 
 struct node {
 	itemType data;
@@ -56,15 +56,24 @@ int eraseOne(bag b,itemType x) {
 		return 0;
 	} else {
 		struct node *traverser = b->head;
-		while(traverser->next->next != NULL) {
-			if(traverser->next->data == x) {
-				struct node *t = traverser->next;
-				traverser->next = t->next;
-				free(t);
-				count++;
-				traverser = traverser->next;
-			}
+		if(traverser->data == x) {
+			b->head = traverser->next;
+			if(DEBUG) printf("Freeing 1st: %d\n", traverser->data);
+			free(traverser);
+			count++;
+			if(b->head != NULL) traverser = b->head;
 		}
+		while(traverser->next != NULL) {
+			if(traverser->next->data == x) {
+				struct node *temporary = traverser->next;
+				traverser->next = temporary->next;
+				if(DEBUG) printf("Freeing: %d\n", temporary->data);
+				free(temporary);
+				count++;
+			}
+			if(traverser->next != NULL) traverser = traverser->next;
+		}
+		b->size -= count;
 		return count;
 	}
 }     // erases the value x in b, returns # removed
@@ -106,7 +115,7 @@ char *toBagString(bag b) {
 	char *returnString = malloc(b->size * 50);
 	struct node* traverser = b->head;
 	if(traverser==NULL) {
-		return "{}";
+		return "{}\n";
 	} else {
 		strcat(returnString, "{");
 		while(traverser != NULL) {
