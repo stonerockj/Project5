@@ -29,11 +29,23 @@ bag createBag() {
 } // create a new bag
 
 void freeBag(bag b) {
-	//emptyBag(b);
+	emptyBag(b);
 	free(b);
 }  // deallocates a bag
 
-void emptyBag(bag);                // emptys the bag
+void emptyBag(bag b) {
+	if(b->head != NULL) {
+		for(int i = 1; i <= b->size; i++) {
+			struct node* traverser = b->head;
+			for(int j = 0; j < b->size - i; j++)
+				traverser = traverser->next;
+			if(DEBUG) printf("Freeing %d\n", traverser->data);
+			free(traverser);
+		}
+		b->size = 0;
+		b->head = NULL;
+	}
+}                // emptys the bag
 void bagCopy(bag b1,bag b2);    // copies b2 to b1, overwriting b1
 int size(bag b) {
 	return b->size;
@@ -95,7 +107,17 @@ void add(bag b,itemType item) {
 	}
 	b->size++;
 }         // inserts value in bag
-itemType get(bag b,int n);     // returns item at n in b where 0 is first item
+itemType get(bag b,int n) {
+	struct node* traverser = b->head;
+	for(int i = 0; i < n && i < b->size; i++)
+		traverser = traverser->next;
+	if(traverser != NULL) {
+		return traverser->data;
+	} else {
+		printf("empty list\n");
+		exit(-1);
+	}
+}     // returns item at n in b where 0 is first item
 bool contains(bag b,itemType x) {
 	bool con = false;
 	struct node* traverser = b->head;
