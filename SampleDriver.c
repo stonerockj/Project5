@@ -4,6 +4,7 @@
 #include "itemType.h"
 #include "bag.h"
 
+
 int main(void) {
 	bag b = createBag();
 	printf("%d\n", size(b));
